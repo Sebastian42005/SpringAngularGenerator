@@ -1,0 +1,36 @@
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class ReplacementService {
+
+    private final ReplacementRepository replacementRepository;
+
+    public List<Replacement> getReplacements() {
+        return replacementRepository.findAll();
+    }
+
+    public Replacement getReplacement(int id) {
+        return replacementRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    public Replacement createReplacement(Replacement replacement) {
+        return replacementRepository.save(replacement);
+    }
+
+    public Replacement updateReplacement(Replacement replacement) {
+        Replacement dbReplacement = replacementRepository.findById(replacement.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        //TODO: implement update
+        return dbReplacement;
+    }
+
+    public void deleteReplacement(int id) {
+        Replacement replacement = replacementRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        replacementRepository.delete(replacement);
+    }
+}

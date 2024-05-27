@@ -1,0 +1,41 @@
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/replacement")
+@RequiredArgsConstructor
+public class ReplacementController {
+
+    private final ReplacementService replacementService;
+
+    @GetMapping
+    public ResponseEntity<List<Replacement>> getReplacements() {
+        return ResponseEntity.ok(replacementService.getReplacements());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Replacement> getReplacement(@PathVariable int id) {
+        return ResponseEntity.ok(replacementService.getReplacement(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<Replacement> saveReplacement(@RequestBody Replacement replacement) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(replacementService.createReplacement(replacement));
+    }
+
+    @PutMapping
+    public ResponseEntity<Replacement> updateReplacement(@RequestBody Replacement replacement) {
+        return ResponseEntity.ok(replacementService.updateReplacement(replacement));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteReplacement(@PathVariable int id) {
+        replacementService.deleteReplacement(id);
+        return ResponseEntity.ok(Map.of("message", "Replacement deleted successfully"));
+    }
+}

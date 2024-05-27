@@ -1,0 +1,37 @@
+<mat-tab-group>
+  <mat-tab label="Backend">
+    <div class="backend-container">
+      <div class="create-div">
+        <mat-form-field>
+          <mat-label>Class Name</mat-label>
+          <input matInput placeholder="Person" [(ngModel)]="name">
+        </mat-form-field>
+        <button mat-flat-button color="primary" (click)="generateRest()">Generate</button>
+      </div>
+      <div class="results-list">
+        @for (result of data; track result.title) {
+          <div class="results-div">
+            <div class="results-header">
+              <h2>{{ result.title }}</h2>
+              <mat-icon [cdkCopyToClipboard]="result.content">file_copy</mat-icon>
+            </div>
+            <div class="preformatted">{{ result.content }}</div>
+          </div>
+        }
+      </div>
+    </div>
+  </mat-tab>
+  <mat-tab label="Frontend">
+    <div class="upload-div">
+      <div class="upload-area"
+           (drop)="onFileDropped($event)"
+           (dragover)="onDragOver($event)">
+        <h3>Drag & Drop your file here</h3>
+        @if (file) {
+          <p *ngIf="file">{{ file.name }}</p>
+        }
+      </div>
+      <button mat-flat-button color="primary" (click)="uploadFile()" [disabled]="!file">Upload File</button>
+    </div>
+  </mat-tab>
+</mat-tab-group>
