@@ -11,7 +11,7 @@
   }
 
   getReplacement(id: number): Observable<Replacement> {
-    return this.get<Replacement>(`/replacement${id}`)
+    return this.get<Replacement>(`/replacement/${id}`)
   }
 
   deleteReplacement(id: number): Observable<any> {

@@ -3,5 +3,5 @@
   <form>
     //TODO Input Fields
   </form>
-  <button mat-flat-button color="primary" (click)="createReplacement()">Create</button>
+  <button mat-flat-button color="primary" (click)="createReplacement()">{{edit ? 'Update' : 'Create'}}</button>
 </div>

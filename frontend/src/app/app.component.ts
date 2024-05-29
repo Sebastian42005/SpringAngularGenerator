@@ -53,6 +53,10 @@ export class AppComponent {
     return `ng g c admin/${name.toLowerCase()}/AdminCreate${name}`
   }
 
+  getCreateComponentDetailCommand(name: string) {
+    return `ng g c admin/${name.toLowerCase()}/AdminDetail${name}`
+  }
+
   getApiCalls() {
     this.apiService.getApiCalls(this.files).subscribe(apiCalls => {
       console.log("Api", apiCalls)
@@ -76,6 +80,7 @@ export class AppComponent {
     const fileList: string[] = [];
     this.files.forEach(file => {
       fileList.push(`  {path: 'admin/${file.name.replace('.java', '').toLowerCase()}', component: Admin${file.name.replace('.java', '')}Component}`)
+      fileList.push(`  {path: 'admin/${file.name.replace('.java', '').toLowerCase()}/:id', component: AdminDetail${file.name.replace('.java', '')}Component}`)
     })
     return fileList.join(",\n");
   }

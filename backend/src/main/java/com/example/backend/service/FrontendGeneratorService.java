@@ -27,9 +27,13 @@ public class FrontendGeneratorService {
                 new FileDto("TS", generateAdminTsComponent(classContent)),
                 new FileDto("SCSS", generateAdminScssComponent(classContent))
         )), new FileListDto("Create", List.of(
-                new FileDto("CreateHTML", generateAdminCreateHtmlComponent(classContent)),
-                new FileDto("CreateTS", generateAdminCreateTsComponent(classContent)),
-                new FileDto("CreateSCSS", generateAdminCreateScssComponent())
+                new FileDto("HTML", generateAdminCreateHtmlComponent(classContent)),
+                new FileDto("TS", generateAdminCreateTsComponent(classContent)),
+                new FileDto("SCSS", generateAdminCreateScssComponent())
+        )), new FileListDto("Detail", List.of(
+                new FileDto("HTML", generateAdminDetailHtmlComponent(classContent)),
+                new FileDto("TS", generateAdminDetailTSComponent(classContent)),
+                new FileDto("SCSS", generateAdminDetailScssComponent(classContent))
         )));
     }
 
@@ -63,7 +67,8 @@ public class FrontendGeneratorService {
             return "?.id";
         }
         return switch (type) {
-            case "Date", "Instant" -> " | date";
+            case "Instant" -> " | date:'dd.MM.yyyy HH:mm'";
+            case "Date" -> " | date:'dd.MM.yyyy'";
             default -> "";
         };
     }
@@ -88,7 +93,7 @@ public class FrontendGeneratorService {
         String content = helperService.getFileContent(helperService.getFilePath("FrontendAdminCreateHtmlComponent"));
         List<String> inputFields = new ArrayList<>();
         classContent.getValues().forEach(value -> {
-            if (!value.getName().equalsIgnoreCase("id") && !value.getName().equalsIgnoreCase("password")) {
+            if (!value.getName().equalsIgnoreCase("id")) {
                 String inputField = "   <mat-form-field>\n" +
                         "      <mat-label>ReplacementColumn</mat-label>\n" +
                         "      <input matInput type=\"typeRep\" [(ngModel)]=\"replacement.replacementColumn\" name=\"replacementColumn\">\n" +
@@ -156,6 +161,31 @@ public class FrontendGeneratorService {
 
     private String generateAdminCreateScssComponent() {
         return helperService.getFileContent(helperService.getFilePath("FrontendAdminCreateScssComponent"));
+    }
+
+    private String generateAdminDetailHtmlComponent(ClassContent classContent) {
+        String content = helperService.getFileContent(helperService.getFilePath("FrontendAdminDetailHtmlComponent"));
+        List<String> itemList = new ArrayList<>();
+        classContent.getValues().forEach(value -> {
+            String item = "<div class=\"info-item\">\n" +
+                    "          <span class=\"label\">ReplacementColumn:</span>\n" +
+                    "          <span class=\"value\">{{ replacement.replacementColumn }}</span>\n" +
+                    "        </div>";
+            itemList.add(item
+                    .replace("replacementColumn", value.getName())
+                    .replace("ReplacementColumn", helperService.capitalizeFirstLetter(value.getName())));
+        });
+        content = content.replace("//TODO ItemList", String.join("\n        ", itemList));
+        return helperService.replaceFileContent(content, classContent.getName());
+    }
+
+    private String generateAdminDetailTSComponent(ClassContent classContent) {
+        String content = helperService.getFileContent(helperService.getFilePath("FrontendAdminDetailTsComponent"));
+        return helperService.replaceFileContent(content, classContent.getName());
+    }
+
+    private String generateAdminDetailScssComponent(ClassContent classContent) {
+        return helperService.getFileContent(helperService.getFilePath("FrontendAdminDetailScssComponent"));
     }
 
     private String getInputFieldType(String type) {

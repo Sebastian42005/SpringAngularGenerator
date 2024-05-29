@@ -13,10 +13,12 @@
         <app-drag-and-drop (filesChanged)="backendFiles = $event"></app-drag-and-drop>
         <button mat-flat-button color="primary" (click)="generateController()">Generate</button>
       </div>
-      <mat-tab-group>
+      <mat-tab-group class="code-components-div">
         @for (service of backendServices; track service.name) {
           <mat-tab [label]="service.name">
-            <app-display-data [data]="service.generatorDtoList"></app-display-data>
+            <div>
+              <app-display-data [data]="service.generatorDtoList"></app-display-data>
+            </div>
           </mat-tab>
         }
       </mat-tab-group>
@@ -51,6 +53,10 @@
             <div class="command-div">
               <p>{{ getCreateComponentCreateCommand(service.name) }}</p>
               <mat-icon [cdkCopyToClipboard]="getCreateComponentCreateCommand(service.name)">file_copy</mat-icon>
+            </div>
+            <div class="command-div">
+              <p>{{ getCreateComponentDetailCommand(service.name) }}</p>
+              <mat-icon [cdkCopyToClipboard]="getCreateComponentDetailCommand(service.name)">file_copy</mat-icon>
             </div>
             <mat-tab-group class="code-components-div">
               @for (data of service.fileList; track data.name) {

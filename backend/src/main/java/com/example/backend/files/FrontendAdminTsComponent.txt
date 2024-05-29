@@ -2,7 +2,6 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {MatSort} from "@angular/material/sort";
 import {MatPaginator} from "@angular/material/paginator";
-import {Replacement} from "../../../domain/Replacement";
 import {ApiService} from "../../../api.service";
 import {MatDialog} from "@angular/material/dialog";
 import {AdminCreateReplacementComponent} from "../admin-create-replacement/admin-create-replacement.component";

@@ -1,0 +1,30 @@
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from "@angular/router";
+import {ApiService} from "../../../api.service";
+import {Location} from "@angular/common";
+
+@Component({
+  selector: 'app-admin-detail-replacement',
+  templateUrl: './admin-detail-replacement.component.html',
+  styleUrl: './admin-detail-replacement.component.scss'
+})
+export class AdminDetailReplacementComponent implements OnInit {
+  replacement = {} as Replacement
+
+  constructor(private activateRoute: ActivatedRoute,
+              private apiService: ApiService,
+              private location: Location) {
+  }
+
+  ngOnInit() {
+    this.activateRoute.params.subscribe(param => {
+      this.apiService.getReplacement(param['id']).subscribe(replacement => {
+        this.replacement = replacement;
+      })
+    })
+  }
+
+  goBack(): void {
+    this.location.back();
+  }
+}
