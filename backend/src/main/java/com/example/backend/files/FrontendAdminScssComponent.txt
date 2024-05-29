@@ -28,5 +28,9 @@
     .delete-icon {
       color: darkred;
     }
+
+    .display-icon {
+      color: #005cbb;
+    }
   }
 }

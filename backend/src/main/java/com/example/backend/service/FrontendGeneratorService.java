@@ -167,13 +167,16 @@ public class FrontendGeneratorService {
         String content = helperService.getFileContent(helperService.getFilePath("FrontendAdminDetailHtmlComponent"));
         List<String> itemList = new ArrayList<>();
         classContent.getValues().forEach(value -> {
-            String item = "<div class=\"info-item\">\n" +
-                    "          <span class=\"label\">ReplacementColumn:</span>\n" +
-                    "          <span class=\"value\">{{ replacement.replacementColumn }}</span>\n" +
-                    "        </div>";
-            itemList.add(item
-                    .replace("replacementColumn", value.getName())
-                    .replace("ReplacementColumn", helperService.capitalizeFirstLetter(value.getName())));
+            if (!value.getType().startsWith("List<")) {
+                String item = "<div class=\"info-item\">\n" +
+                        "          <span class=\"label\">ReplacementColumn:</span>\n" +
+                        "          <span class=\"value\">{{ replacement.replacementColumntypeRep }}</span>\n" +
+                        "        </div>";
+                itemList.add(item
+                        .replace("typeRep", getTypeDisplay(value.getType()))
+                        .replace("replacementColumn", value.getName())
+                        .replace("ReplacementColumn", helperService.capitalizeFirstLetter(value.getName())));
+            }
         });
         content = content.replace("//TODO ItemList", String.join("\n        ", itemList));
         return helperService.replaceFileContent(content, classContent.getName());

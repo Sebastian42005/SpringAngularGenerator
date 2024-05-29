@@ -13,6 +13,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
         <td mat-cell *matCellDef="let row">
           <div class="action-div">
+            <mat-icon class="display-icon" (click)="displayReplacement(row)">remove_red_eye</mat-icon>
             <mat-icon class="edit-icon" (click)="editReplacement(row)">edit</mat-icon>
             <mat-icon class="delete-icon" (click)="deleteReplacement(row.id)">delete</mat-icon>
           </div>

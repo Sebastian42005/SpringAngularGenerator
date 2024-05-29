@@ -5,6 +5,7 @@ import {MatPaginator} from "@angular/material/paginator";
 import {ApiService} from "../../../api.service";
 import {MatDialog} from "@angular/material/dialog";
 import {AdminCreateReplacementComponent} from "../admin-create-replacement/admin-create-replacement.component";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-admin-replacement',
@@ -19,7 +20,8 @@ export class AdminReplacementComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(private apiService: ApiService,
-              private matDialog: MatDialog) {
+              private matDialog: MatDialog,
+              private router: Router) {
   }
 
   ngOnInit() {
@@ -65,4 +67,8 @@ export class AdminReplacementComponent implements OnInit {
       this.dataSource.data = this.dataSource.data.filter(replacement => replacement.id != id);
     });
   }
+
+  displayReplacement(replacement: Replacement) {
+      this.router.navigate(['admin', 'replacement', replacement.id]).then()
+    }
 }
