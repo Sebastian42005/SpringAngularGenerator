@@ -1,0 +1,41 @@
+.results-list {
+  display: grid;
+  margin: 20px;
+  gap: 20px;
+}
+
+.results-div {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  padding: 20px;
+
+  .preformatted {
+    white-space: pre;
+    margin: 0;
+    padding: 0;
+    max-height: 700px;
+    overflow-y: scroll;
+  }
+
+  .results-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 5px;
+    color: #005cbb;
+
+    mat-icon {
+      cursor: pointer;
+      scale: 1.25;
+      margin-top: -10px;
+    }
+  }
+}
+
+.single {
+  width: 30vw;
+  margin: 20px auto;
+}

@@ -1,0 +1,7 @@
+<div class="container">
+  <h1>{{edit ? 'Update' : 'Create'}} Replacement</h1>
+  <form>
+    //TODO Input Fields
+  </form>
+  <button mat-flat-button color="primary" (click)="createReplacement()">Create</button>
+</div>

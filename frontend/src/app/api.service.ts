@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {RestGenerateDto} from "./dto/RestGenerateDto";
+import {FileDto} from "./dto/FileDto";
+import {FileListDto} from "./dto/FileListDto";
+import {FrontendFileListDto} from "./dto/FrontendFileListDto";
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +12,40 @@ export class ApiService {
 
   constructor(private httpClient: HttpClient) { }
 
-  generateRest(name: string): Observable<RestGenerateDto[]> {
-    return this.get<RestGenerateDto[]>('/backend/generate/' + name);
+  generateTsFiles(files: File[]): Observable<FileDto[]> {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+    return this.post<FileDto[]>('/frontend/ts-file', formData);
+  }
+
+  generateRest(name: string): Observable<FileDto> {
+    return this.get<FileDto>('/backend/generate/' + name);
+  }
+
+  generateService(files: File[]): Observable<FileListDto[]> {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+    return this.post<FileListDto[]>('/backend/generate', formData);
+  }
+
+  generateAdminPage(files: File[]): Observable<FrontendFileListDto[]> {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+    return this.post<FrontendFileListDto[]>('/frontend/admin-page', formData);
+  }
+
+  getApiCalls(files: File[]): Observable<FileDto> {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+    return this.post<FileDto>('/frontend/api-calls', formData);
   }
 
   private get<T>(url: string): Observable<T> {
@@ -31,4 +65,4 @@ export class ApiService {
   }
 }
 
-export const baseUrl = 'http://localhost:8080';
+export const baseUrl = 'http://localhost:8081';

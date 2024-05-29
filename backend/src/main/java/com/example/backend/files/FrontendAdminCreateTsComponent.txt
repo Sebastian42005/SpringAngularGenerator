@@ -1,0 +1,36 @@
+import {Component, Inject, OnInit} from '@angular/core';
+import {Replacement} from "../../../domain/Replacement";
+import {ApiService} from "../../../api.service";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {Category} from "../../../domain/Category";
+
+@Component({
+  selector: 'app-admin-create-replacement',
+  templateUrl: './admin-create-replacement.component.html',
+  styleUrl: './admin-create-replacement.component.scss'
+})
+export class AdminCreateReplacementComponent implements OnInit{
+  replacement: Replacement = {} as Replacement;
+  edit = false;
+  //TODO entityLists
+
+  constructor(private apiService: ApiService,
+              private matDialogRef: MatDialogRef<AdminCreateReplacementComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: Replacement) {
+  }
+
+  ngOnInit() {
+    if (this.data != null) {
+      this.replacement = this.data;
+      this.edit = true;
+    }
+    //TODO ApiCalls
+  }
+
+  createReplacement() {
+    const apiCall = this.edit ? this.apiService.updateReplacement(this.replacement) : this.apiService.createReplacement(this.replacement);
+    apiCall.subscribe(replacement => {
+      this.matDialogRef.close(replacement);
+    });
+  }
+}

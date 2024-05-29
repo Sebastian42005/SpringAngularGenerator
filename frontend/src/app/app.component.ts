@@ -1,6 +1,8 @@
-import {AfterViewInit, Component} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {ApiService} from "./api.service";
-import {RestGenerateDto} from "./dto/RestGenerateDto";
+import {FileDto} from "./dto/FileDto";
+import {FileListDto} from "./dto/FileListDto";
+import {FrontendFileListDto} from "./dto/FrontendFileListDto";
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -8,35 +10,88 @@ import {RestGenerateDto} from "./dto/RestGenerateDto";
 })
 export class AppComponent {
   name: string = '';
-  file: File | null = null;
-  data: RestGenerateDto[];
+  data: FileDto[];
+  frontendData: FileDto[];
+  backendServices: FileListDto[];
+  frontendAdminPage: FrontendFileListDto[]
+  apiCalls: FileDto;
+  files: File[] = [];
+  backendFiles: File[] = [];
 
   constructor(private apiService: ApiService) {}
 
   generateRest() {
     this.apiService.generateRest(this.name).subscribe(data => {
-      this.data = data
+      this.data = [data];
     })
   }
 
-
-  onFileDropped(event: DragEvent) {
-    event.preventDefault();
-    const files = event.dataTransfer?.files;
-    if (files && files.length > 0) {
-      this.file = files[0];
-    }
+  generateTsFiles() {
+    this.apiService.generateTsFiles(this.files).subscribe(data => {
+      this.frontendData = data;
+    })
   }
 
-  onDragOver(event: DragEvent) {
-    event.preventDefault();
+  generateController() {
+    this.apiService.generateService(this.backendFiles).subscribe(data => {
+      this.backendServices = data;
+    })
   }
 
-  uploadFile() {
-    if (this.file) {
-      const formData = new FormData();
-      formData.append('file', this.file);
+  generateAdminPage() {
+    this.apiService.generateAdminPage(this.files).subscribe(data => {
+      this.frontendAdminPage = data;
+    })
+    this.getApiCalls();
+  }
 
-    }
+  getCreateComponentCommand(name: string) {
+    return `ng g c admin/${name.toLowerCase()}/Admin${name}`
+  }
+
+  getCreateComponentCreateCommand(name: string) {
+    return `ng g c admin/${name.toLowerCase()}/AdminCreate${name}`
+  }
+
+  getApiCalls() {
+    this.apiService.getApiCalls(this.files).subscribe(apiCalls => {
+      console.log("Api", apiCalls)
+      this.apiCalls = apiCalls;
+    })
+  }
+
+  getImports() {
+    return `
+    MatInputModule,
+    MatTableModule,
+    MatSortModule,
+    MatIconModule,
+    MatButtonModule,
+    MatPaginatorModule,
+    FormsModule,
+    MatSelectModule`
+  }
+
+  getRouting() {
+    const fileList: string[] = [];
+    this.files.forEach(file => {
+      fileList.push(`  {path: 'admin/${file.name.replace('.java', '').toLowerCase()}', component: Admin${file.name.replace('.java', '')}Component}`)
+    })
+    return fileList.join(",\n");
+  }
+
+  getImportsAndApiCalls() {
+    const list: FileDto[] = [
+      {
+        title: 'Imports',
+        content: this.getImports()
+      },
+      this.apiCalls,
+      {
+        title: 'Routing',
+        content: this.getRouting(),
+      }
+    ];
+    return list;
   }
 }

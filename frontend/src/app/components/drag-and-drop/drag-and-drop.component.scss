@@ -1,0 +1,33 @@
+.upload-area {
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f1f1f1;
+
+  }
+}
+
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 0 20px;
+
+  .file-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    mat-icon {
+      color: darkred;
+      cursor: pointer;
+    }
+  }
+
+}

@@ -1,0 +1,16 @@
+<label for="file-input">
+  <div class="upload-area"
+       (drop)="onFileDropped($event)"
+       (dragover)="onDragOver($event)">
+    <h3>Drag & Drop your files here</h3>
+  </div>
+</label>
+<div class="file-list">
+  @for (file of files; track file.name) {
+    <div class="file-div">
+      <span>{{ file.name }}</span>
+      <mat-icon (click)="deleteFile(file)">close</mat-icon>
+    </div>
+  }
+</div>
+<input id="file-input" type="file" [hidden]="true" (change)="onFileSelected($event)">

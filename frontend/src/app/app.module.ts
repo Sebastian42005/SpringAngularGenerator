@@ -12,10 +12,14 @@ import {provideHttpClient} from "@angular/common/http";
 import {CdkCopyToClipboard} from "@angular/cdk/clipboard";
 import {MatTab, MatTabGroup} from "@angular/material/tabs";
 import {DragDropModule} from "@angular/cdk/drag-drop";
+import { DragAndDropComponent } from './components/drag-and-drop/drag-and-drop.component';
+import { DisplayDataComponent } from './components/display-data/display-data.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    DragAndDropComponent,
+    DisplayDataComponent
   ],
   imports: [
     BrowserModule,

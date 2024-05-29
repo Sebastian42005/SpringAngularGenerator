@@ -1,0 +1,19 @@
+  createReplacement(replacement: Replacement): Observable<Replacement> {
+    return this.post<Replacement>('/replacement', replacement)
+  }
+
+  updateReplacement(replacement: Replacement) {
+    return this.put<Replacement>('/replacement', replacement)
+  }
+
+  getAllReplacements(): Observable<Replacement[]> {
+    return this.get<Replacement[]>('/replacement')
+  }
+
+  getReplacement(id: number): Observable<Replacement> {
+    return this.get<Replacement>(`/replacement${id}`)
+  }
+
+  deleteReplacement(id: number): Observable<any> {
+    return this.delete(`/replacement/${id}`)
+  }

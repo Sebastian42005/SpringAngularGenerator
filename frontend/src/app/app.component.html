@@ -8,30 +8,65 @@
         </mat-form-field>
         <button mat-flat-button color="primary" (click)="generateRest()">Generate</button>
       </div>
-      <div class="results-list">
-        @for (result of data; track result.title) {
-          <div class="results-div">
-            <div class="results-header">
-              <h2>{{ result.title }}</h2>
-              <mat-icon [cdkCopyToClipboard]="result.content">file_copy</mat-icon>
-            </div>
-            <div class="preformatted">{{ result.content }}</div>
-          </div>
-        }
+      <app-display-data [data]="data"></app-display-data>
+      <div class="drag-and-drop-div">
+        <app-drag-and-drop (filesChanged)="backendFiles = $event"></app-drag-and-drop>
+        <button mat-flat-button color="primary" (click)="generateController()">Generate</button>
       </div>
+      <mat-tab-group>
+        @for (service of backendServices; track service.name) {
+          <mat-tab [label]="service.name">
+            <app-display-data [data]="service.generatorDtoList"></app-display-data>
+          </mat-tab>
+        }
+      </mat-tab-group>
     </div>
   </mat-tab>
   <mat-tab label="Frontend">
     <div class="upload-div">
-      <div class="upload-area"
-           (drop)="onFileDropped($event)"
-           (dragover)="onDragOver($event)">
-        <h3>Drag & Drop your file here</h3>
-        @if (file) {
-          <p *ngIf="file">{{ file.name }}</p>
-        }
+      <app-drag-and-drop (filesChanged)="files = $event"></app-drag-and-drop>
+      <div class="buttons-div">
+        <button mat-flat-button color="primary" (click)="generateTsFiles()" [disabled]="files.length == 0">Generate ts
+          files
+        </button>
+        <button mat-flat-button color="primary" (click)="generateAdminPage()" [disabled]="files.length == 0">
+          Generate Admin Page
+        </button>
       </div>
-      <button mat-flat-button color="primary" (click)="uploadFile()" [disabled]="!file">Upload File</button>
     </div>
+    <app-display-data [data]="frontendData"></app-display-data>
+    <mat-tab-group>
+      @for (service of frontendAdminPage; track service.name) {
+        <mat-tab [label]="service.name">
+          <div class="service-div">
+            <h2>Generate Components:</h2>
+            <div class="command-div">
+              <p>Imports</p>
+              <mat-icon [cdkCopyToClipboard]="getImports()">file_copy</mat-icon>
+            </div>
+            <div class="command-div">
+              <p>{{ getCreateComponentCommand(service.name) }}</p>
+              <mat-icon [cdkCopyToClipboard]="getCreateComponentCommand(service.name)">file_copy</mat-icon>
+            </div>
+            <div class="command-div">
+              <p>{{ getCreateComponentCreateCommand(service.name) }}</p>
+              <mat-icon [cdkCopyToClipboard]="getCreateComponentCreateCommand(service.name)">file_copy</mat-icon>
+            </div>
+            <mat-tab-group class="code-components-div">
+              @for (data of service.fileList; track data.name) {
+                <mat-tab [label]="data.name">
+                  <app-display-data [data]="data.generatorDtoList"></app-display-data>
+                </mat-tab>
+              }
+            </mat-tab-group>
+          </div>
+        </mat-tab>
+      }
+      @if (apiCalls) {
+        <mat-tab label="Imports & API">
+          <app-display-data rowTemplate="1fr 1fr 1fr" [data]="getImportsAndApiCalls()"></app-display-data>
+        </mat-tab>
+      }
+    </mat-tab-group>
   </mat-tab>
 </mat-tab-group>

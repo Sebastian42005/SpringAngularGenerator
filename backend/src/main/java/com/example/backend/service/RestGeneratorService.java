@@ -1,47 +1,35 @@
 package com.example.backend.service;
 
+import com.example.backend.dataclasses.ClassContent;
 import com.example.backend.enums.Option;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class RestGeneratorService {
 
+    private final HelperService helperService;
+
     public String generateRest(String name, Option option) {
-        return printFileContentWithReplacement(option.getName(), name);
+        return helperService.replaceFileContent(helperService.getFileContent(helperService.getFilePath("Name" + option.getName())), name);
     }
 
-    private static String printFileContentWithReplacement(String option, String replacement) {
-        String content = getFileContent("backend/src/main/java/com/example/backend/files/Name" + option + ".txt");
-        content = content
-                .replace("Replacements", changeLastYToIes(replacement))
-                .replace("Replacement", replacement)
-                .replace("replacement", replacement.toLowerCase());
-        return content;
-    }
-
-    public static String changeLastYToIes(String word) {
-        if (word.endsWith("y")) {
-            return word.substring(0, word.length() - 1) + "ies";
-        }
-        return word;
-    }
-
-    private static String getFileContent(String file) {
-        try {
-            List<String> lines = Files.readAllLines(Paths.get(file));
-            StringBuilder content = new StringBuilder();
-            for (String line : lines) {
-                content.append(line).append("\n");
+    public String generateService(MultipartFile file) {
+        ClassContent classContent = helperService.getClassFromFile(helperService.getFileContent(file));
+        List<String> updates = new ArrayList<>();
+        classContent.getValues().forEach(value -> {
+            if (!value.getName().equals("id")) {
+                String name = helperService.capitalizeFirstLetter(value.getName());
+                updates.add("dbReplacement.set" + name + "(replacement.get" + name + "());");
             }
-            return content.toString();
-        }catch (IOException exception) {
-            System.out.println("Gibt es nicht!");
-            return "";
-        }
+        });
+        String content = helperService.getFileContent(helperService.getFilePath("NameService"));
+        content = content.replace("//TODO: implement update", String.join("\n        ", updates));
+        return helperService.replaceFileContent(content, classContent.getName());
     }
 }

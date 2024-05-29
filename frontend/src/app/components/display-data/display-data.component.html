@@ -1,0 +1,21 @@
+@if (data?.length != 1) {
+  <div class="results-list" [ngStyle]="{'grid-template-columns': rowTemplate}">
+    @for (result of data; track result.title) {
+      <div class="results-div">
+        <div class="results-header">
+          <h2>{{ result.title }}</h2>
+          <mat-icon [cdkCopyToClipboard]="result.content">file_copy</mat-icon>
+        </div>
+        <div class="preformatted">{{ result.content }}</div>
+      </div>
+    }
+  </div>
+} @else {
+  <div class="results-div single">
+    <div class="results-header">
+      <h2>{{ data[0].title }}</h2>
+      <mat-icon [cdkCopyToClipboard]="data[0].content">file_copy</mat-icon>
+    </div>
+    <div class="preformatted">{{ data[0].content }}</div>
+  </div>
+}

@@ -1,0 +1,32 @@
+.container {
+  padding: 20px;
+
+  table {
+    width: 100%;
+  }
+
+  .create-replacement-button {
+    border-radius: 100%;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    overflow: hidden;
+  }
+
+  .action-div {
+    display: flex;
+    gap: 10px;
+
+    mat-icon {
+      cursor: pointer;
+    }
+
+    .edit-icon {
+      color: gray;
+    }
+
+    .delete-icon {
+      color: darkred;
+    }
+  }
+}

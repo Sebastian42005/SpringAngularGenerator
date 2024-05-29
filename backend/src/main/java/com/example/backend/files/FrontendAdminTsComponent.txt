@@ -1,0 +1,69 @@
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {MatTableDataSource} from "@angular/material/table";
+import {MatSort} from "@angular/material/sort";
+import {MatPaginator} from "@angular/material/paginator";
+import {Replacement} from "../../../domain/Replacement";
+import {ApiService} from "../../../api.service";
+import {MatDialog} from "@angular/material/dialog";
+import {AdminCreateReplacementComponent} from "../admin-create-replacement/admin-create-replacement.component";
+
+@Component({
+  selector: 'app-admin-replacement',
+  templateUrl: './admin-replacement.component.html',
+  styleUrl: './admin-replacement.component.scss'
+})
+export class AdminReplacementComponent implements OnInit {
+  displayedColumns: string[] = [//TODO Column, 'action'];
+  dataSource: MatTableDataSource<Replacement>;
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+
+  constructor(private apiService: ApiService,
+              private matDialog: MatDialog) {
+  }
+
+  ngOnInit() {
+    this.apiService.getAllReplacements().subscribe(replacements => {
+      this.dataSource = new MatTableDataSource(replacements);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    })
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  createReplacement() {
+    this.matDialog.open(AdminCreateReplacementComponent).afterClosed().subscribe(replacement => {
+      if (replacement != null) {
+        this.dataSource.data.push(replacement);
+        this.dataSource._updateChangeSubscription();
+      }
+    });
+  }
+
+  editReplacement(replacement: Replacement) {
+    this.matDialog.open(AdminCreateReplacementComponent, {
+      data: { ...replacement }
+    }).afterClosed().subscribe(replacement => {
+      if (replacement != null) {
+        this.dataSource.data = this.dataSource.data.filter(current => current.id != replacement.id)
+        this.dataSource.data.push(replacement);
+        this.dataSource._updateChangeSubscription();
+      }
+    });
+  }
+
+  deleteReplacement(id: number) {
+    this.apiService.deleteReplacement(id).subscribe(() => {
+      this.dataSource.data = this.dataSource.data.filter(replacement => replacement.id != id);
+    });
+  }
+}

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class RestGeneratorDto {
+public class FileDto {
     private String title;
     private String content;
 }

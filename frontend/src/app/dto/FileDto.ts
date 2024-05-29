@@ -1,4 +1,4 @@
-export interface RestGenerateDto {
+export interface FileDto {
   title: string;
   content: string;
 }

@@ -10,10 +10,13 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
 public class ClassContent {
     private String name;
     private List<ClassValue> values;
+
+    public ClassContent() {
+        this.values = new ArrayList<>();
+    }
 
     @AllArgsConstructor
     @Getter
