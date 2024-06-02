@@ -75,4 +75,13 @@
       }
     </mat-tab-group>
   </mat-tab>
+  <mat-tab label="Requests">
+    <div class="backend-container">
+      <div class="drag-and-drop-div">
+        <app-drag-and-drop (filesChanged)="controllerFiles = $event"></app-drag-and-drop>
+        <button mat-flat-button color="primary" (click)="generateRequests()">Generate</button>
+      </div>
+      <app-display-data [data]="requestsData"></app-display-data>
+    </div>
+  </mat-tab>
 </mat-tab-group>

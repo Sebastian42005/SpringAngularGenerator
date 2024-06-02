@@ -17,6 +17,8 @@ export class AppComponent {
   apiCalls: FileDto;
   files: File[] = [];
   backendFiles: File[] = [];
+  controllerFiles: File[] = [];
+  requestsData: FileDto[];
 
   constructor(private apiService: ApiService) {}
 
@@ -98,5 +100,11 @@ export class AppComponent {
       }
     ];
     return list;
+  }
+
+  generateRequests() {
+    this.apiService.generateRequests(this.controllerFiles).subscribe(data => {
+      this.requestsData = data;
+    })
   }
 }

@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.dataclasses.ControllerContent;
 import com.example.backend.dto.FileDto;
 import com.example.backend.dto.FileListDto;
 import com.example.backend.dto.FrontendFileListDto;
@@ -46,5 +47,10 @@ public class FrontendGeneratorController {
             apiCalls.add(frontendGeneratorService.getApiCalls(file));
         });
         return new FileDto("API", String.join("\n\n", apiCalls));
+    }
+
+    @PostMapping("/generate-service")
+    public List<FileDto> generateService(@RequestParam("files") List<MultipartFile> files) {
+        return frontendGeneratorService.generateService(files);
     }
 }

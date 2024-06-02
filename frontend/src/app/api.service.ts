@@ -12,6 +12,14 @@ export class ApiService {
 
   constructor(private httpClient: HttpClient) { }
 
+  generateRequests(files: File[]) {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+    return this.post<FileDto[]>('/frontend/generate-service', formData);
+  }
+
   generateTsFiles(files: File[]): Observable<FileDto[]> {
     const formData = new FormData();
     files.forEach(file => {

@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import com.example.backend.dataclasses.ClassContent;
+import com.example.backend.dataclasses.ControllerContent;
 import com.example.backend.dto.FileDto;
 import com.example.backend.dto.FileListDto;
 import lombok.RequiredArgsConstructor;
@@ -8,9 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.PrimitiveIterator;
 
 @Service
 @RequiredArgsConstructor
@@ -237,5 +238,87 @@ public class FrontendGeneratorService {
                 }
             }
         }
+    }
+
+    public List<FileDto> generateService(List<MultipartFile> files) {
+        List<FileDto> contentList = new ArrayList<>();
+        files.forEach(file -> {
+            ControllerContent controllerContent = generateServiceFile(file);
+            String content = "  // " + controllerContent.getName() + "\n\n";
+            List<String> methods = new ArrayList<>();
+            controllerContent.getRequestsList().forEach(request -> {
+                String firstLine = "  " + request.getMethodName() + "(" + "): Observable<" + request.getReturnType() + "> {";
+                String secondLine = "return this." + request.getMethod().toLowerCase() + "<" + request.getReturnType() + ">(`" + controllerContent.getBasePath() + request.getPath() + "`";
+                methods.add(firstLine + "\n    " + secondLine + "\n  }");
+            });
+            content += String.join("\n\n", methods);
+            contentList.add(new FileDto(controllerContent.getName(), content));
+        });
+        return contentList;
+    }
+
+    private ControllerContent generateServiceFile(MultipartFile file) {
+        ControllerContent controllerContent = new ControllerContent();
+        String content = helperService.getFileContent(file);
+        List<String> lines = Arrays.stream(content.split("\n")).toList();
+        List<ControllerContent.RequestMapping> requestMappings = new ArrayList<>();
+        for (int i = 0; i < lines.toArray().length; i++) {
+            String line = lines.get(i).trim();
+            if (line.startsWith("@RequestMapping")) {
+                controllerContent.setBasePath(getPath(line));
+            }
+            if (line.startsWith("public class")) {
+                controllerContent.setName(line.split(" ")[2]);
+            }
+            if (line.startsWith("@PostMapping") || line.startsWith("@GetMapping") || line.startsWith("@PutMapping") || line.startsWith("@DeleteMapping")) {
+                ControllerContent.RequestMapping requestMapping = new ControllerContent.RequestMapping();
+                if (line.trim().startsWith("@PostMapping")) {
+                    requestMapping.setMethod("POST");
+                } else if (line.trim().startsWith("@GetMapping")) {
+                    requestMapping.setMethod("GET");
+                } else if (line.trim().startsWith("@PutMapping")) {
+                    requestMapping.setMethod("PUT");
+                } else if (line.trim().startsWith("@DeleteMapping")) {
+                    requestMapping.setMethod("DELETE");
+                }
+                String lineAfter = lines.get(i + 1).trim();
+                if (line.contains("(")) {
+                    requestMapping.setPath(getPath(line));
+                }
+                if (lineAfter.contains("public")) {
+                    String[] words = lineAfter.split(" ");
+                    String tsType = words[1];
+                    if (tsType.startsWith("ResponseEntity<")) {
+                        tsType = tsType.replace("ResponseEntity<", "");
+                        tsType = tsType.substring(0, tsType.length() - 1);
+                    }
+                    requestMapping.setReturnType(convertJavaTypeToTSType(tsType));
+                    requestMapping.setMethodName(words[2].split("\\(")[0]);
+                    List<String> methodParams = Arrays.stream(lineAfter.substring(lineAfter.indexOf("(") + 1, lineAfter.indexOf(")")).split(",")).toList();
+                    List<ControllerContent.RequestParam> params = new ArrayList<>();
+                    methodParams.forEach(param -> {
+                        if (!param.isEmpty()) {
+                            ControllerContent.RequestParamType type = ControllerContent.RequestParamType.REQUEST_PARAM;
+                            if (param.contains("@PathVariable")) {
+                                type = ControllerContent.RequestParamType.PATH_VARIABLE;
+                            } else if (param.contains("@RequestBody")) {
+                                type = ControllerContent.RequestParamType.REQUEST_BODY;
+                            }
+                            String[] paramWords = param.split(" ");
+                            params.add(new ControllerContent.RequestParam(type, convertJavaTypeToTSType(paramWords[1]), paramWords[2]));
+                        }
+                    });
+                    requestMapping.setRequestParams(params);
+                }
+                requestMappings.add(requestMapping);
+            }
+        }
+        controllerContent.setRequestsList(requestMappings);
+        return controllerContent;
+    }
+
+    private String getPath(String line) {
+        String path = line.substring(line.indexOf("(") + 2, line.indexOf("\")"));
+        return path.replace("{", "${");
     }
 }
