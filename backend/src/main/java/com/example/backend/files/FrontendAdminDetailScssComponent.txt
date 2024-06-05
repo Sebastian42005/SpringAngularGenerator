@@ -49,6 +49,37 @@
         }
       }
     }
+
+    .list-container {
+      h2 {
+        font-size: 1.5rem;
+        color: #005cbb;
+        margin-bottom: 10px;
+      }
+
+      .list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .list-item {
+          display: flex;
+          justify-content: space-between;
+          padding: 12px;
+          background-color: #e9ecef;
+          border-radius: 10px;
+
+          .id {
+            font-weight: bold;
+            color: black;
+          }
+
+          .value {
+            color: black;
+          }
+        }
+      }
+    }
   }
 
   .actions {

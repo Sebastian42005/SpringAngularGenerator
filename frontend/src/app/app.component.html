@@ -81,7 +81,7 @@
         <app-drag-and-drop (filesChanged)="controllerFiles = $event"></app-drag-and-drop>
         <button mat-flat-button color="primary" (click)="generateRequests()">Generate</button>
       </div>
-      <app-display-data [data]="requestsData"></app-display-data>
+      <app-display-data rowTemplate="1fr 1fr 1fr" [data]="requestsData"></app-display-data>
     </div>
   </mat-tab>
 </mat-tab-group>

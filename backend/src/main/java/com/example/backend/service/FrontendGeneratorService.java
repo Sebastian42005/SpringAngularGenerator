@@ -5,6 +5,7 @@ import com.example.backend.dataclasses.ControllerContent;
 import com.example.backend.dto.FileDto;
 import com.example.backend.dto.FileListDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -167,6 +168,7 @@ public class FrontendGeneratorService {
     private String generateAdminDetailHtmlComponent(ClassContent classContent) {
         String content = helperService.getFileContent(helperService.getFilePath("FrontendAdminDetailHtmlComponent"));
         List<String> itemList = new ArrayList<>();
+        List<String> listList = new ArrayList<>();
         classContent.getValues().forEach(value -> {
             if (!value.getType().startsWith("List<")) {
                 String item = "<div class=\"info-item\">\n" +
@@ -177,9 +179,23 @@ public class FrontendGeneratorService {
                         .replace("typeRep", getTypeDisplay(value.getType()))
                         .replace("replacementColumn", value.getName())
                         .replace("ReplacementColumn", helperService.capitalizeFirstLetter(value.getName())));
+            } else {
+                String list = "<div class=\"list-container\">\n" +
+                        "            <h2>ReplacementColumn</h2>\n" +
+                        "            <div class=\"list\">\n" +
+                        "                <div class=\"list-item\" *ngFor=\"let item of replacement.replacementColumn\">\n" +
+                        "                    <span class=\"id\">{{ item.id }}</span>\n" +
+                        "                    <span class=\"value\">{{ item.name }}</span>\n" +
+                        "                </div>\n" +
+                        "            </div>\n" +
+                        "        </div>";
+                listList.add(list
+                        .replace("replacementColumn", value.getName())
+                        .replace("ReplacementColumn", helperService.capitalizeFirstLetter(value.getName())));
             }
         });
-        content = content.replace("//TODO ItemList", String.join("\n        ", itemList));
+        content = content.replace("//TODO ItemList", String.join("\n                ", itemList));
+        content = content.replace("//TODO ListList", String.join("\n        ", listList));
         return helperService.replaceFileContent(content, classContent.getName());
     }
 
@@ -247,14 +263,24 @@ public class FrontendGeneratorService {
             String content = "  // " + controllerContent.getName() + "\n\n";
             List<String> methods = new ArrayList<>();
             controllerContent.getRequestsList().forEach(request -> {
-                String firstLine = "  " + request.getMethodName() + "(" + "): Observable<" + request.getReturnType() + "> {";
-                String secondLine = "return this." + request.getMethod().toLowerCase() + "<" + request.getReturnType() + ">(`" + controllerContent.getBasePath() + request.getPath() + "`";
+                String firstLine = "  " + request.getMethodName() + "(" + getRequestParamsContent(request) + "): Observable<" + request.getReturnType() + "> {";
+                String body = ", " +  request.getRequestParams().stream().filter(param -> param.getType() == ControllerContent.RequestParamType.REQUEST_BODY).findFirst()
+                        .map(ControllerContent.RequestParam::getValue).orElse("");
+                String secondLine = "return this." + request.getMethod().toLowerCase()
+                        + "<" + request.getReturnType() + ">(`" +
+                        controllerContent.getBasePath() + request.getPath() + "`" + body + ")";
                 methods.add(firstLine + "\n    " + secondLine + "\n  }");
             });
             content += String.join("\n\n", methods);
             contentList.add(new FileDto(controllerContent.getName(), content));
         });
         return contentList;
+    }
+
+    private String getRequestParamsContent(ControllerContent.RequestMapping requestMapping) {
+        List<String> contentList = new ArrayList<>();
+        requestMapping.getRequestParams().forEach(requestParam -> contentList.add(requestParam.getValue() + ": " + requestParam.getClassName()));
+        return String.join(", ", contentList);
     }
 
     private ControllerContent generateServiceFile(MultipartFile file) {
@@ -293,7 +319,11 @@ public class FrontendGeneratorService {
                         tsType = tsType.substring(0, tsType.length() - 1);
                     }
                     requestMapping.setReturnType(convertJavaTypeToTSType(tsType));
-                    requestMapping.setMethodName(words[2].split("\\(")[0]);
+                    int pos = lineAfter.indexOf("(");
+                    String beforeParen = lineAfter.substring(0, pos);
+
+                    String[] methodWords = beforeParen.split(" ");
+                    requestMapping.setMethodName(methodWords[methodWords.length - 1]);
                     List<String> methodParams = Arrays.stream(lineAfter.substring(lineAfter.indexOf("(") + 1, lineAfter.indexOf(")")).split(",")).toList();
                     List<ControllerContent.RequestParam> params = new ArrayList<>();
                     methodParams.forEach(param -> {
@@ -310,6 +340,7 @@ public class FrontendGeneratorService {
                     });
                     requestMapping.setRequestParams(params);
                 }
+                if (requestMapping.getPath() == null) requestMapping.setPath("");
                 requestMappings.add(requestMapping);
             }
         }
