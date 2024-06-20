@@ -183,7 +183,7 @@ public class FrontendGeneratorService {
                 String list = "<div class=\"list-container\">\n" +
                         "            <h2>ReplacementColumn</h2>\n" +
                         "            <div class=\"list\">\n" +
-                        "                <div class=\"list-item\" *ngFor=\"let item of replacement.replacementColumn\">\n" +
+                        "                <div [routerLink]=\"['/admin/replacementColumn', item.id]\" class=\"list-item\" *ngFor=\"let item of replacement.replacementColumn\">\n" +
                         "                    <span class=\"id\">{{ item.id }}</span>\n" +
                         "                    <span class=\"value\">{{ item.name }}</span>\n" +
                         "                </div>\n" +

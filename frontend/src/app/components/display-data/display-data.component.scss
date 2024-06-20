@@ -8,7 +8,7 @@
   display: flex;
   flex-direction: column;
   border-radius: 10px;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0 7px 29px 0;
   padding: 20px;
   max-width: 45vw;
 
@@ -18,6 +18,8 @@
     padding: 0;
     max-height: 700px;
     overflow-y: scroll;
+    font-size: 0.9rem;
+    font-family: monospace;
   }
 
   .results-header {

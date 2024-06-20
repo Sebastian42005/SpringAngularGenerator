@@ -32,6 +32,7 @@
         gap: 10px;
 
         .info-item {
+          width: 92%;
           display: flex;
           justify-content: space-between;
           padding: 12px;
@@ -64,6 +65,7 @@
 
         .list-item {
           display: flex;
+          cursor: pointer;
           justify-content: space-between;
           padding: 12px;
           background-color: #e9ecef;
